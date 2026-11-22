@@ -1,0 +1,283 @@
+{
+	"format": "kinex-mark-demo/1",
+	"users": [
+		{ "username": "admin", "displayName": "Tóth Eszter", "role": "admin", "bootstrap": true },
+		{
+			"username": "kanna",
+			"displayName": "Kovács Anna",
+			"role": "developer",
+			"password": "Demo-Fejleszto-Jelszo-2026"
+		},
+		{
+			"username": "szpeter",
+			"displayName": "Szabó Péter",
+			"role": "customer",
+			"password": "Demo-Ugyfel-Jelszo-2026"
+		}
+	],
+	"tags": {
+		"admin": [
+			{ "name": "Dokumentáció", "color": "blue" },
+			{ "name": "Backend", "color": "green" },
+			{ "name": "Frontend", "color": "violet" },
+			{ "name": "Üzemeltetés", "color": "ochre" },
+			{ "name": "Biztonság", "color": "rose" },
+			{ "name": "Referencia", "color": "neutral" },
+			{ "name": "Ügyfélprojekt", "color": "contrast" },
+			{ "name": "Tanulás", "color": "blue" }
+		],
+		"kanna": [
+			{ "name": "Go", "color": "green" },
+			{ "name": "Svelte", "color": "violet" },
+			{ "name": "Adatbázis", "color": "ochre" }
+		],
+		"szpeter": [
+			{ "name": "Fontos", "color": "rose" },
+			{ "name": "Projekt", "color": "blue" }
+		]
+	},
+	"links": [
+		{
+			"owner": "admin",
+			"url": "https://go.dev/doc/",
+			"description": "A Go nyelv hivatalos dokumentációja",
+			"tags": ["Dokumentáció", "Backend"],
+			"pinned": true,
+			"visits": 14
+		},
+		{
+			"owner": "admin",
+			"url": "https://svelte.dev/docs/kit/introduction",
+			"description": "SvelteKit: bevezető és útválasztás",
+			"tags": ["Dokumentáció", "Frontend"],
+			"pinned": true,
+			"visits": 9
+		},
+		{
+			"owner": "admin",
+			"url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy",
+			"description": "Content-Security-Policy fejléc referenciája",
+			"tags": ["Biztonság", "Referencia"],
+			"visits": 6
+		},
+		{
+			"owner": "admin",
+			"url": "https://www.sqlite.org/lang.html",
+			"description": "Az SQLite SQL-nyelvének referenciája",
+			"tags": ["Backend", "Referencia"],
+			"visits": 5
+		},
+		{
+			"owner": "admin",
+			"url": "https://docs.docker.com/reference/dockerfile/",
+			"description": "Dockerfile-utasítások egy helyen",
+			"tags": ["Üzemeltetés", "Referencia"],
+			"visits": 7
+		},
+		{
+			"owner": "admin",
+			"url": "https://owasp.org/www-project-application-security-verification-standard/",
+			"description": "OWASP ASVS biztonsági ellenőrzőlista",
+			"tags": ["Biztonság"],
+			"visits": 3
+		},
+		{
+			"owner": "admin",
+			"url": "https://www.rfc-editor.org/rfc/rfc6238",
+			"description": "A TOTP szabvány (RFC 6238)",
+			"tags": ["Biztonság", "Referencia"],
+			"visits": 2
+		},
+		{
+			"owner": "admin",
+			"url": "https://tailwindcss.com/docs",
+			"description": "Tailwind CSS segédosztályok",
+			"tags": ["Frontend"],
+			"visits": 4
+		},
+		{
+			"owner": "admin",
+			"url": "https://playwright.dev/docs/intro",
+			"description": "Végponttól végpontig tartó tesztek Playwrighttal",
+			"tags": ["Frontend", "Tanulás"],
+			"visits": 3
+		},
+		{
+			"owner": "admin",
+			"url": "https://kubernetes.io/docs/home/",
+			"description": "Kubernetes-dokumentáció kezdőknek és haladóknak",
+			"tags": ["Üzemeltetés", "Tanulás"],
+			"visits": 1
+		},
+		{
+			"owner": "admin",
+			"url": "https://gdpr-info.eu/",
+			"description": "A GDPR szövege cikkenként",
+			"tags": ["Biztonság", "Ügyfélprojekt"],
+			"visits": 2,
+			"shares": [{ "targetType": "all" }]
+		},
+		{
+			"owner": "admin",
+			"url": "https://www.postgresql.org/docs/current/",
+			"description": "PostgreSQL kézikönyv",
+			"tags": ["Backend", "Tanulás"],
+			"visits": 0
+		},
+		{
+			"owner": "admin",
+			"url": "https://nodejs.org/docs/latest/api/",
+			"description": "Node.js API-referencia",
+			"tags": ["Referencia"],
+			"visits": 1
+		},
+		{
+			"owner": "admin",
+			"url": "https://caddyserver.com/docs/",
+			"description": "Caddy reverse proxy beállítása az ügyfél szerverén",
+			"tags": ["Üzemeltetés", "Ügyfélprojekt"],
+			"visits": 2,
+			"shares": [{ "targetType": "user", "user": "szpeter" }]
+		},
+		{
+			"owner": "admin",
+			"url": "https://git-scm.com/doc",
+			"description": "Git kézikönyv és parancsok",
+			"tags": ["Tanulás"],
+			"visits": 0,
+			"archived": true
+		},
+		{
+			"owner": "admin",
+			"url": "https://httpd.apache.org/docs/",
+			"description": "Apache HTTP Server, a régi ügyfélszerver dokumentációja",
+			"tags": ["Üzemeltetés"],
+			"visits": 1,
+			"archived": true
+		},
+		{
+			"owner": "kanna",
+			"url": "https://pkg.go.dev/net/http",
+			"description": "A net/http csomag dokumentációja",
+			"tags": ["Go"],
+			"pinned": true,
+			"visits": 11
+		},
+		{
+			"owner": "kanna",
+			"url": "https://pkg.go.dev/log/slog",
+			"description": "Strukturált naplózás a log/slog csomaggal",
+			"tags": ["Go"],
+			"visits": 4
+		},
+		{
+			"owner": "kanna",
+			"url": "https://svelte.dev/docs/svelte/what-are-runes",
+			"description": "Svelte 5 runes: állapot és származtatott értékek",
+			"tags": ["Svelte"],
+			"visits": 6
+		},
+		{
+			"owner": "kanna",
+			"url": "https://www.shadcn-svelte.com/docs",
+			"description": "shadcn-svelte komponensek",
+			"tags": ["Svelte"],
+			"visits": 3,
+			"shares": [{ "targetType": "role", "role": "developer" }]
+		},
+		{
+			"owner": "kanna",
+			"url": "https://www.sqlite.org/wal.html",
+			"description": "Hogyan működik az SQLite WAL módja",
+			"tags": ["Adatbázis"],
+			"visits": 2
+		},
+		{
+			"owner": "kanna",
+			"url": "https://pkg.go.dev/modernc.org/sqlite",
+			"description": "CGo nélküli SQLite-meghajtó Góhoz",
+			"tags": ["Go", "Adatbázis"],
+			"visits": 1
+		},
+		{
+			"owner": "kanna",
+			"url": "https://vite.dev/guide/",
+			"description": "Vite: fejlesztői szerver és build",
+			"tags": ["Svelte"],
+			"visits": 1
+		},
+		{
+			"owner": "kanna",
+			"url": "https://grafana.com/docs/grafana/latest/",
+			"description": "Éles műszerfal az ügyfél rendszeréhez",
+			"tags": [],
+			"visits": 2,
+			"shares": [{ "targetType": "role", "role": "customer" }]
+		},
+		{
+			"owner": "kanna",
+			"url": "https://prometheus.io/docs/introduction/overview/",
+			"description": "Prometheus-metrikák áttekintése",
+			"tags": [],
+			"visits": 0,
+			"shares": [{ "targetType": "user", "user": "szpeter" }]
+		},
+		{
+			"owner": "kanna",
+			"url": "https://www.typescriptlang.org/docs/",
+			"description": "TypeScript kézikönyv",
+			"tags": ["Svelte"],
+			"visits": 0,
+			"archived": true
+		},
+		{
+			"owner": "szpeter",
+			"url": "https://www.w3.org/WAI/standards-guidelines/wcag/",
+			"description": "Akadálymentességi irányelvek (WCAG)",
+			"tags": ["Projekt"],
+			"pinned": true,
+			"visits": 3
+		},
+		{
+			"owner": "szpeter",
+			"url": "https://docs.github.com/en",
+			"description": "GitHub súgó",
+			"tags": ["Projekt"],
+			"visits": 1
+		},
+		{
+			"owner": "szpeter",
+			"url": "https://code.visualstudio.com/docs",
+			"description": "VS Code dokumentáció",
+			"tags": [],
+			"visits": 0
+		},
+		{
+			"owner": "szpeter",
+			"url": "https://learn.microsoft.com/en-us/powershell/",
+			"description": "PowerShell-dokumentáció",
+			"tags": ["Fontos"],
+			"visits": 2
+		}
+	],
+	"recipientState": [
+		{
+			"user": "szpeter",
+			"url": "https://grafana.com/docs/grafana/latest/",
+			"pinned": true,
+			"tags": ["Fontos"],
+			"visits": 3
+		},
+		{
+			"user": "szpeter",
+			"url": "https://prometheus.io/docs/introduction/overview/",
+			"tags": ["Projekt"],
+			"visits": 1
+		},
+		{
+			"user": "kanna",
+			"url": "https://gdpr-info.eu/",
+			"visits": 1
+		}
+	]
+}

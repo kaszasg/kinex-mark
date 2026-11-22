@@ -1,0 +1,17 @@
+/dist/
+/data/
+/coverage.out
+/coverage.html
+web/node_modules/
+web/build/
+web/.svelte-kit/
+web/coverage/
+web/test-results/
+web/playwright-report/
+web/blob-report/
+web/e2e/.auth/
+graphics/__pycache__/
+# Playwright MCP output (GUI test snapshots, downloads, screenshots; may hold test secrets)
+.playwright-mcp/
+.env
+.env.*

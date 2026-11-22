@@ -1,0 +1,49 @@
+services:
+  kinex-mark:
+    build:
+      context: .
+      target: runtime
+      args:
+        VERSION: ${VERSION:-dev}
+    image: kinex-mark:latest
+    # Use the published image instead of a local build:
+    # image: ghcr.io/kaszasg/kinex-mark:latest
+    restart: unless-stopped
+    ports:
+      # Loopback only: put a TLS reverse proxy in front of it for network access.
+      - "127.0.0.1:8080:8080"
+    environment:
+      APP_LOG_FORMAT: json
+      APP_SECURE_COOKIES: auto
+      # Required behind a reverse proxy: the public origin. Without it the CSRF origin
+      # check fails over TLS, cookies lose Secure, and no Host check protects the API.
+      # APP_BASE_URL: https://mark.example.com
+      # Required behind a reverse proxy: only the proxy's single address, never a whole range.
+      # Pin that address in the proxy's own service, Docker assigns addresses dynamically:
+      #   networks: { proxy: { ipv4_address: 172.30.0.2 } }
+      # APP_TRUSTED_PROXY: 172.30.0.2/32
+      # APP_ADMIN_USER: admin
+      # Remove APP_ADMIN_PASSWORD after the first start (it stays visible in docker inspect).
+      # APP_ADMIN_PASSWORD: ${APP_ADMIN_PASSWORD}
+      # APP_ALLOW_PRIVATE_FETCH: "true"
+      # APP_FETCH_WORKERS: "2"
+    volumes:
+      - kinex-mark-data:/data
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    # Behind a reverse proxy container, attach both to a dedicated network:
+    # networks: [proxy]
+
+volumes:
+  kinex-mark-data:
+
+# networks:
+#   proxy:
+#     ipam:
+#       config:
+#         - subnet: 172.30.0.0/29

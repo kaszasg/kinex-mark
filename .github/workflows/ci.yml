@@ -1,0 +1,215 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  GO_VERSION: '1.27.x'
+  NODE_VERSION: '26'
+  GOTOOLCHAIN: local
+
+jobs:
+  web:
+    name: Web (lint, check, unit tests, build)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run check
+      - run: npm run test:coverage
+      - name: Coverage summary
+        if: always()
+        run: |
+          node -e "
+          const t = require('./coverage/coverage-summary.json').total;
+          console.log('### Web unit test coverage');
+          console.log('| Metric | Percent |');
+          console.log('|---|---|');
+          for (const k of ['statements','branches','functions','lines']) console.log('| ' + k + ' | ' + t[k].pct + '% |');
+          " >> "$GITHUB_STEP_SUMMARY"
+      - run: npm run build
+      - uses: actions/upload-artifact@v7
+        with:
+          name: web-build
+          path: web/build
+          retention-days: 3
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: web-coverage
+          path: web/coverage
+          retention-days: 14
+
+  go:
+    name: Go ${{ matrix.go }} (fmt, vet, test)
+    needs: web
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        go: ['1.26.x', '1.27.x']
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
+        with:
+          go-version: ${{ matrix.go }}
+          cache-dependency-path: go.sum
+      - uses: actions/download-artifact@v8
+        with:
+          name: web-build
+          path: web/build
+      - name: gofmt
+        run: |
+          unformatted="$(gofmt -l cmd internal tools web/*.go)"
+          if [ -n "$unformatted" ]; then echo "$unformatted"; exit 1; fi
+      - run: go mod verify
+      - run: go vet ./...
+      - run: go run ./tools/langcheck
+      - name: Test (race, coverage)
+        run: go test -race -timeout 15m -covermode=atomic -coverprofile=coverage.out ./...
+      - name: Coverage gate
+        if: matrix.go == '1.27.x'
+        run: go run ./tools/covercheck -profile coverage.out -total 85 -package 80 -markdown >> "$GITHUB_STEP_SUMMARY"
+      - name: Vulnerability check
+        if: matrix.go == '1.27.x'
+        run: go run golang.org/x/vuln/cmd/govulncheck@latest ./...
+      - name: Coverage report
+        if: always() && matrix.go == '1.27.x'
+        run: go tool cover -html=coverage.out -o coverage.html
+      - uses: actions/upload-artifact@v7
+        if: always() && matrix.go == '1.27.x'
+        with:
+          name: go-coverage
+          path: |
+            coverage.out
+            coverage.html
+          retention-days: 14
+
+  go-windows:
+    name: Go tests on Windows
+    needs: web
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache-dependency-path: go.sum
+      - uses: actions/download-artifact@v8
+        with:
+          name: web-build
+          path: web/build
+      - run: go test -timeout 15m ./...
+
+  e2e:
+    name: End-to-end (Playwright, real binary)
+    needs: web
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache-dependency-path: go.sum
+      - uses: actions/setup-node@v7
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - uses: actions/download-artifact@v8
+        with:
+          name: web-build
+          path: web/build
+      - name: Build binary
+        run: CGO_ENABLED=0 go build -trimpath -ldflags="-s -w -X main.version=ci-${GITHUB_SHA::7}" -o dist/kinex-mark ./cmd/kinex-mark
+      - run: npm ci
+        working-directory: web
+      - uses: actions/cache@v6
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('web/package-lock.json') }}
+      - run: npx playwright install --with-deps chromium
+        working-directory: web
+      - run: npm run test:e2e
+        working-directory: web
+        env:
+          CI: 'true'
+          KINEX_MARK_BIN: ${{ github.workspace }}/dist/kinex-mark
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: playwright-report
+          path: |
+            web/playwright-report
+            web/test-results
+          retention-days: 7
+
+  binaries:
+    name: Cross-compiled binaries
+    needs: [web, go]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-go@v7
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache-dependency-path: go.sum
+      - uses: actions/download-artifact@v8
+        with:
+          name: web-build
+          path: web/build
+      - name: Build
+        run: |
+          version="$(git describe --tags --always)"
+          for target in linux/amd64 linux/arm64 windows/amd64 darwin/arm64; do
+            os="${target%/*}"; arch="${target#*/}"; ext=""
+            [ "$os" = windows ] && ext=".exe"
+            CGO_ENABLED=0 GOOS="$os" GOARCH="$arch" go build -trimpath \
+              -ldflags="-s -w -X main.version=$version" \
+              -o "dist/kinex-mark-$os-$arch$ext" ./cmd/kinex-mark
+          done
+      - uses: actions/upload-artifact@v7
+        with:
+          name: binaries
+          path: dist/
+          retention-days: 14
+
+  image:
+    name: Docker image (build, smoke, push)
+    # Push events only (main, v* tags); runs after every test job is green.
+    if: github.event_name == 'push'
+    needs: [web, go, go-windows, e2e]
+    permissions:
+      contents: read
+      packages: write
+    uses: ./.github/workflows/docker.yml
+    with:
+      push: true

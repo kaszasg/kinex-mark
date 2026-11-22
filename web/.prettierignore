@@ -1,0 +1,12 @@
+build
+.svelte-kit
+coverage
+test-results
+playwright-report
+blob-report
+e2e/.auth
+package-lock.json
+src/lib/components/ui
+src/app.css
+src/app.html
+.playwright-mcp

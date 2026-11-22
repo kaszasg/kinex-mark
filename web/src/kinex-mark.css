@@ -1,0 +1,73 @@
+/* Kinex Mark product rules on top of the brand stylesheet (app.css). Plain CSS, tokens only (plan 8.1.6). */
+
+/* Row highlight: fades the accent background of a freshly captured or located row. */
+@keyframes kxm-flash {
+	from {
+		background-color: var(--accent);
+	}
+	to {
+		background-color: transparent;
+	}
+}
+
+/* Row highlight: applied by the list for one run of the fade. */
+.kxm-flash {
+	animation: kxm-flash 1200ms ease-out;
+}
+
+/* Row highlight with reduced motion: a static ring that the caller removes after 2 seconds. */
+.kxm-flash-static {
+	outline: 1px solid var(--ring);
+}
+
+/* Drop overlay: veils the page while a link is dragged over it. */
+.kxm-drop-scrim {
+	background-color: color-mix(in oklab, var(--background) 88%, transparent);
+}
+
+/* Link list rows: skip rendering of off-screen rows, reserve the row height. */
+.kxm-list-row {
+	content-visibility: auto;
+	contain-intrinsic-size: auto 52px;
+}
+
+/* Print-only content (recovery codes) stays hidden on screen. */
+.kxm-print-only {
+	display: none;
+}
+
+/* Printing: dark text on a light page in both themes, screen-only parts hidden. */
+@media print {
+	/* Theme override for paper: every neutral surface is the lightest mist, every text the darkest ink. */
+	:root,
+	.dark,
+	.light,
+	[data-theme='dark'],
+	[data-theme='light'] {
+		color-scheme: light;
+		--foreground: var(--ink-950);
+		--background: var(--mist-50);
+		--card: var(--mist-50);
+		--card-foreground: var(--ink-950);
+		--popover: var(--mist-50);
+		--popover-foreground: var(--ink-950);
+		--secondary: var(--mist-50);
+		--secondary-foreground: var(--ink-950);
+		--muted: var(--mist-50);
+		--muted-foreground: var(--ink-950);
+		--accent: var(--mist-50);
+		--accent-foreground: var(--ink-950);
+		--border: var(--ink-950);
+		--input: var(--ink-950);
+	}
+
+	/* Print-only content becomes visible. */
+	.kxm-print-only {
+		display: block;
+	}
+
+	/* Screen-only parts (navigation, buttons) are left off the page. */
+	.kxm-no-print {
+		display: none !important;
+	}
+}
