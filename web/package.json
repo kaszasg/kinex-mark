@@ -58,6 +58,6 @@
 	"dependencies": {
 		"@lucide/svelte": "^1.77.0",
 		"mode-watcher": "^1.1.0",
-		"uqr": "^0.1.2"
+		"uqr": "^0.1.3"
 	}
 }
